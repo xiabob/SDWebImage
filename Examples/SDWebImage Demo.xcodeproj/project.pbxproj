@@ -43,6 +43,8 @@
 		53A2B50D155B155A00B12423 /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 53A2B50B155B155A00B12423 /* placeholder.png */; };
 		53A2B50E155B155A00B12423 /* placeholder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53A2B50C155B155A00B12423 /* placeholder@2x.png */; };
 		53EEC18916484553007601E1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53EEC18816484553007601E1 /* Default-568h@2x.png */; };
+		744709981E55B24A006F6AF2 /* SDWebImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A0FAAF1BDD16AC00B7582B /* SDWebImage.framework */; };
+		744709991E55B24A006F6AF2 /* SDWebImage.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 43A0FAAF1BDD16AC00B7582B /* SDWebImage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DA248D44195470FD00390AB0 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 537612E3155ABA3C005750A4 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -103,13 +105,6 @@
 			remoteGlobalIDString = 43A629F91D0E07600089D7DD;
 			remoteInfo = "SDWebImage Watch Demo Extension";
 		};
-		43A62A0D1D0E07600089D7DD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5376128C155AB74D005750A4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 43A629ED1D0E07600089D7DD;
-			remoteInfo = "SDWebImage Watch Demo";
-		};
 		43F04B3D1D9E467E003F9640 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DA248D6C1954841D00390AB0 /* SDWebImage.xcodeproj */;
@@ -118,6 +113,13 @@
 			remoteInfo = "SDWebImage watchOS";
 		};
 		43F100161D9EE17C00F6E0CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA248D6C1954841D00390AB0 /* SDWebImage.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4A2CADFE1AB4BB5300B6BC39;
+			remoteInfo = "SDWebImage iOS";
+		};
+		7447099A1E55B24A006F6AF2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DA248D6C1954841D00390AB0 /* SDWebImage.xcodeproj */;
 			proxyType = 1;
@@ -154,6 +156,17 @@
 				43A62A0F1D0E07600089D7DD /* SDWebImage Watch Demo.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7447099C1E55B24B006F6AF2 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				744709991E55B24A006F6AF2 /* SDWebImage.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -248,6 +261,7 @@
 				DA248D44195470FD00390AB0 /* MapKit.framework in Frameworks */,
 				531041C1157EAC8F00BBABC3 /* ImageIO.framework in Frameworks */,
 				5376129A155AB74D005750A4 /* UIKit.framework in Frameworks */,
+				744709981E55B24A006F6AF2 /* SDWebImage.framework in Frameworks */,
 				5376129C155AB74D005750A4 /* Foundation.framework in Frameworks */,
 				5376129E155AB74D005750A4 /* CoreGraphics.framework in Frameworks */,
 			);
@@ -499,12 +513,13 @@
 				53761292155AB74D005750A4 /* Frameworks */,
 				53761293155AB74D005750A4 /* Resources */,
 				43A62A171D0E07600089D7DD /* Embed Watch Content */,
+				7447099C1E55B24B006F6AF2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				43F100171D9EE17C00F6E0CE /* PBXTargetDependency */,
-				43A62A0E1D0E07600089D7DD /* PBXTargetDependency */,
+				7447099B1E55B24A006F6AF2 /* PBXTargetDependency */,
 			);
 			name = "SDWebImage iOS Demo";
 			productName = "SDWebImage Demo";
@@ -522,15 +537,21 @@
 				TargetAttributes = {
 					4314D1A51D0E1181004B36C9 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = WPR8JVVW9L;
 					};
 					43A629CE1D0DFD000089D7DD = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
 					43A629ED1D0E07600089D7DD = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = WPR8JVVW9L;
 					};
 					43A629F91D0E07600089D7DD = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = WPR8JVVW9L;
+					};
+					53761294155AB74D005750A4 = {
+						DevelopmentTeam = WPR8JVVW9L;
 					};
 				};
 			};
@@ -718,11 +739,6 @@
 			target = 43A629F91D0E07600089D7DD /* SDWebImage Watch Demo Extension */;
 			targetProxy = 43A629FC1D0E07600089D7DD /* PBXContainerItemProxy */;
 		};
-		43A62A0E1D0E07600089D7DD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 43A629ED1D0E07600089D7DD /* SDWebImage Watch Demo */;
-			targetProxy = 43A62A0D1D0E07600089D7DD /* PBXContainerItemProxy */;
-		};
 		43F04B3E1D9E467E003F9640 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "SDWebImage watchOS";
@@ -732,6 +748,11 @@
 			isa = PBXTargetDependency;
 			name = "SDWebImage iOS";
 			targetProxy = 43F100161D9EE17C00F6E0CE /* PBXContainerItemProxy */;
+		};
+		7447099B1E55B24A006F6AF2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "SDWebImage iOS";
+			targetProxy = 7447099A1E55B24A006F6AF2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -798,6 +819,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = WPR8JVVW9L;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -809,7 +831,7 @@
 				INFOPLIST_FILE = "SDWebImage TV Demo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dailymotion.SDWebImage-TV-Demo";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-TV-Demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -837,6 +859,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = WPR8JVVW9L;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -849,7 +872,7 @@
 				INFOPLIST_FILE = "SDWebImage TV Demo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dailymotion.SDWebImage-TV-Demo";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-TV-Demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -952,6 +975,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = WPR8JVVW9L;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -963,7 +987,7 @@
 				INFOPLIST_FILE = "SDWebImage Watch Demo Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dailymotion.SDWebImage-iOS-Demo.watchkitapp.watchkitextension";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-iOS-Demo.watchkitapp.watchkitextension";
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -990,6 +1014,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = WPR8JVVW9L;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1002,7 +1027,7 @@
 				INFOPLIST_FILE = "SDWebImage Watch Demo Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dailymotion.SDWebImage-iOS-Demo.watchkitapp.watchkitextension";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-iOS-Demo.watchkitapp.watchkitextension";
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1029,6 +1054,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = WPR8JVVW9L;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1040,7 +1066,7 @@
 				IBSC_MODULE = SDWebImage_Watch_Demo_Extension;
 				INFOPLIST_FILE = "SDWebImage Watch Demo/Info.plist";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dailymotion.SDWebImage-iOS-Demo.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-iOS-Demo.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1068,6 +1094,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = WPR8JVVW9L;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1080,7 +1107,7 @@
 				IBSC_MODULE = SDWebImage_Watch_Demo_Extension;
 				INFOPLIST_FILE = "SDWebImage Watch Demo/Info.plist";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dailymotion.SDWebImage-iOS-Demo.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-iOS-Demo.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1133,6 +1160,7 @@
 		537612BA155AB74D005750A4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = WPR8JVVW9L;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -1146,9 +1174,10 @@
 				);
 				INFOPLIST_FILE = "SDWebImage Demo/SDWebImage Demo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dailymotion.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-iOS-Demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -1158,6 +1187,7 @@
 		537612BB155AB74D005750A4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = WPR8JVVW9L;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -1171,8 +1201,9 @@
 				);
 				INFOPLIST_FILE = "SDWebImage Demo/SDWebImage Demo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.dailymotion.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-iOS-Demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;

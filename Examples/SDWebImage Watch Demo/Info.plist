@@ -28,7 +28,7 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>com.dailymotion.SDWebImage-iOS-Demo</string>
+	<string>com.xiabob.SDWebImage-iOS-Demo</string>
 	<key>WKWatchKitApp</key>
 	<true/>
 </dict>

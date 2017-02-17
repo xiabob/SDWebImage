@@ -89,15 +89,15 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
     SDCallbacksDictionary *callbacks = [NSMutableDictionary new];
     if (progressBlock) callbacks[kProgressCallbackKey] = [progressBlock copy];
     if (completedBlock) callbacks[kCompletedCallbackKey] = [completedBlock copy];
-    dispatch_barrier_async(self.barrierQueue, ^{
-        [self.callbackBlocks addObject:callbacks];
+    dispatch_barrier_async(self.barrierQueue, ^{ //设置barrierQueue，保证操作的原子性
+        [self.callbackBlocks addObject:callbacks]; //callbackBlocks是数组，元素是字典，字典包含的值是progressBlock、completedBlock
     });
     return callbacks;
 }
 
 - (nullable NSArray<id> *)callbacksForKey:(NSString *)key {
     __block NSMutableArray<id> *callbacks = nil;
-    dispatch_sync(self.barrierQueue, ^{
+    dispatch_sync(self.barrierQueue, ^{ //设置barrierQueue，保证操作操作的原子性
         // We need to remove [NSNull null] because there might not always be a progress block for each callback
         callbacks = [[self.callbackBlocks valueForKey:key] mutableCopy];
         [callbacks removeObjectIdenticalTo:[NSNull null]];
@@ -107,7 +107,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
 
 - (BOOL)cancel:(nullable id)token {
     __block BOOL shouldCancel = NO;
-    dispatch_barrier_sync(self.barrierQueue, ^{
+    dispatch_barrier_sync(self.barrierQueue, ^{ //设置barrierQueue，保证操作操作的原子性
         [self.callbackBlocks removeObjectIdenticalTo:token];
         if (self.callbackBlocks.count == 0) {
             shouldCancel = YES;
@@ -119,10 +119,12 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
     return shouldCancel;
 }
 
-- (void)start {
+- (void)start { //默认实现会调用main方法，自定义operation重写start方法可以不调用main，而调用自定义方法
+    
+    //operation会被添加到queue中异步并行执行，这里有修改操作，需要加锁??但同一个operation不会在多个线程执行，加锁有必要吗？
     @synchronized (self) {
-        if (self.isCancelled) {
-            self.finished = YES;
+        if (self.isCancelled) { //需要自己在合适的位置判断operation是否被外界cancle掉了
+            self.finished = YES; //在cancle时也需要设置finished为YES
             [self reset];
             return;
         }
@@ -146,6 +148,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
         }
 #endif
         NSURLSession *session = self.unownedSession;
+        //unownedSession存在，delegate通过SDWebImageDownloader间接回调的
         if (!self.unownedSession) {
             NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
             sessionConfig.timeoutIntervalForRequest = 15;
@@ -158,6 +161,12 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
             self.ownedSession = [NSURLSession sessionWithConfiguration:sessionConfig
                                                               delegate:self
                                                          delegateQueue:nil];
+            //这里的delegate设置的是NSURLSessionDelegate,而NSURLSessionDataDelegate -> NSURLSessionTaskDelegate -> NSURLSessionDelegate，其实三个delegate的返回都可能回调
+            
+            //即使你自定义delegateQueue，该queue也必须是serial queue，以确保delegate回调是正确的次序。
+            
+            //另外也需要手动调用invalidateAndCancel or finishTasksAndInvalidate来正确释放session的强引用，这里类和SDWebImageDownloader都有调用invalidateAndCancel方法来打破循环引用。另外如果只是用到了SDWebImageDownloader的单例，那么只会有循环引用，不会造成leak，生命周期就是和APP相关。
+            
             session = self.ownedSession;
         }
         
@@ -168,6 +177,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
     [self.dataTask resume];
 
     if (self.dataTask) {
+        //设置进度回调，发送开始下载的通知
         for (SDWebImageDownloaderProgressBlock progressBlock in [self callbacksForKey:kProgressCallbackKey]) {
             progressBlock(0, NSURLResponseUnknownLength, self.request.URL);
         }
@@ -222,24 +232,26 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
     [self reset];
 }
 
-- (void)reset {
+- (void)reset { //清理操作
     dispatch_barrier_async(self.barrierQueue, ^{
         [self.callbackBlocks removeAllObjects];
     });
     self.dataTask = nil;
     self.imageData = nil;
     if (self.ownedSession) {
-        [self.ownedSession invalidateAndCancel];
+        [self.ownedSession invalidateAndCancel]; //消除session的强引用
         self.ownedSession = nil;
     }
 }
 
+//finished是readonly的，所以在子类需要自己设置它的setter方法，需要手动触发KVO通知
 - (void)setFinished:(BOOL)finished {
     [self willChangeValueForKey:@"isFinished"];
     _finished = finished;
     [self didChangeValueForKey:@"isFinished"];
 }
 
+//executing是readonly的，所以在子类需要自己设置它的setter方法，需要手动触发KVO通知
 - (void)setExecuting:(BOOL)executing {
     [self willChangeValueForKey:@"isExecuting"];
     _executing = executing;
@@ -247,8 +259,11 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
 }
 
 - (BOOL)isConcurrent {
+    //为YES，operation在相关线程上异步执行；为NO，operation在相关线程同步执行，会阻塞线程
     return YES;
 }
+//上面三个属性，自定义operation时，是必须重写的，isConcurrent为yes保证执行的异步，修改isFinished、isExecuting是为了通过kvo向外界报告operation的状态，operation之前设置优先级、依赖等就需要这些信息，另外在cancle时也需要设置finished为YES。
+
 
 #pragma mark NSURLSessionDataDelegate
 
@@ -256,15 +271,18 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
           dataTask:(NSURLSessionDataTask *)dataTask
 didReceiveResponse:(NSURLResponse *)response
  completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
+    //called received the initial reply (headers) from the server
     
     //'304 Not Modified' is an exceptional one
     if (![response respondsToSelector:@selector(statusCode)] || (((NSHTTPURLResponse *)response).statusCode < 400 && ((NSHTTPURLResponse *)response).statusCode != 304)) {
+        //返回内容的预期大小，单位字节 bytes
         NSInteger expected = response.expectedContentLength > 0 ? (NSInteger)response.expectedContentLength : 0;
         self.expectedSize = expected;
         for (SDWebImageDownloaderProgressBlock progressBlock in [self callbacksForKey:kProgressCallbackKey]) {
             progressBlock(0, expected, self.request.URL);
         }
         
+        //分配内存
         self.imageData = [[NSMutableData alloc] initWithCapacity:expected];
         self.response = response;
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -290,14 +308,17 @@ didReceiveResponse:(NSURLResponse *)response
         [self done];
     }
     
+    //数据传输是否继续？
     if (completionHandler) {
         completionHandler(NSURLSessionResponseAllow);
     }
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
+    //Tells the delegate that the data task has received some of the expected data. 图片数据是慢慢传输过来的，这里添加传输过来的数据
     [self.imageData appendData:data];
 
+    //这里是关于渐进下载的功能，边下载边展示
     if ((self.options & SDWebImageDownloaderProgressiveDownload) && self.expectedSize > 0) {
         // The following code is from http://www.cocoaintheshell.com/2011/05/progressive-images-download-imageio/
         // Thanks to the author @Nyx0uf
@@ -377,6 +398,7 @@ didReceiveResponse:(NSURLResponse *)response
         CFRelease(imageSource);
     }
 
+    //设置图片下载进度
     for (SDWebImageDownloaderProgressBlock progressBlock in [self callbacksForKey:kProgressCallbackKey]) {
         progressBlock(self.imageData.length, self.expectedSize, self.request.URL);
     }
@@ -386,7 +408,8 @@ didReceiveResponse:(NSURLResponse *)response
           dataTask:(NSURLSessionDataTask *)dataTask
  willCacheResponse:(NSCachedURLResponse *)proposedResponse
  completionHandler:(void (^)(NSCachedURLResponse *cachedResponse))completionHandler {
-
+    //在SDWebImageDownloader里初始化request部分设置cachePolicy选项
+    
     responseFromCached = NO; // If this method is called, it means the response wasn't read from cache
     NSCachedURLResponse *cachedResponse = proposedResponse;
 
@@ -402,6 +425,9 @@ didReceiveResponse:(NSURLResponse *)response
 #pragma mark NSURLSessionTaskDelegate
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+    //Tells the delegate that the task finished transferring data. 完成了数据传输
+    //error: client-side errors, such as being unable to resolve the hostname or connect to the host. 这个error是客户端的错误，不是服务器的错误信息
+    
     @synchronized(self) {
         self.dataTask = nil;
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -425,7 +451,8 @@ didReceiveResponse:(NSURLResponse *)response
             if (self.options & SDWebImageDownloaderIgnoreCachedResponse && responseFromCached && [[NSURLCache sharedURLCache] cachedResponseForRequest:self.request]) {
                 // hack
                 [self callCompletionBlocksWithImage:nil imageData:nil error:nil finished:YES];
-            } else if (self.imageData) {
+            } else if (self.imageData) { //获得图片数据，开始解析处理工作
+                //
                 UIImage *image = [UIImage sd_imageWithData:self.imageData];
                 NSString *key = [[SDWebImageManager sharedManager] cacheKeyForURL:self.request.URL];
                 image = [self scaledImageForKey:key image:image];
