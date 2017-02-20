@@ -35,9 +35,11 @@ static char TAG_ACTIVITY_SHOW;
                           progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
                          completed:(nullable SDExternalCompletionBlock)completedBlock {
     NSString *validOperationKey = operationKey ?: NSStringFromClass([self class]);
+    //取消正在进行中的operation
     [self sd_cancelImageLoadOperationWithKey:validOperationKey];
     objc_setAssociatedObject(self, &imageURLKey, url, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
+    //同时结合这里(不使用SDWebImageDelayPlaceholder)，使得在获取图片之前显示的是placeholder或者空白(placeholder为nil)，这样在类似tableview需要复用cell视图中才会表现正常
     if (!(options & SDWebImageDelayPlaceholder)) {
         dispatch_main_async_safe(^{
             [self sd_setImage:placeholder imageData:nil basedOnClassOrViaCustomSetImageBlock:setImageBlock];
@@ -50,21 +52,23 @@ static char TAG_ACTIVITY_SHOW;
             [self sd_addActivityIndicator];
         }
         
+        //都是通过SDWebImageManager的单例，调用loadImageWithURL方法获取图片
         __weak __typeof(self)wself = self;
         id <SDWebImageOperation> operation = [SDWebImageManager.sharedManager loadImageWithURL:url options:options progress:progressBlock completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
             __strong __typeof (wself) sself = wself;
             [sself sd_removeActivityIndicator];
-            if (!sself) {
+            if (!sself) { //判空检查
                 return;
             }
             dispatch_main_async_safe(^{
-                if (!sself) {
+                if (!sself) { //判空检查
                     return;
                 }
                 if (image && (options & SDWebImageAvoidAutoSetImage) && completedBlock) {
                     completedBlock(image, error, cacheType, url);
                     return;
                 } else if (image) {
+                    //设置image，展示图片
                     [sself sd_setImage:image imageData:data basedOnClassOrViaCustomSetImageBlock:setImageBlock];
                     [sself sd_setNeedsLayout];
                 } else {

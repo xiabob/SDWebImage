@@ -46,6 +46,7 @@ static const size_t kBitsPerComponent = 8;
         }
         
         // Draw the image into the context and retrieve the new bitmap image without alpha
+        // 在当前context中绘制图片，得到不含透明域的位图
         CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);
         CGImageRef imageRefWithoutAlpha = CGBitmapContextCreateImage(context);
         UIImage *imageWithoutAlpha = [UIImage imageWithCGImage:imageRefWithoutAlpha

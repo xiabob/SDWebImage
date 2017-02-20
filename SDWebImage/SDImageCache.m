@@ -370,6 +370,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     }
 
     // First check the in-memory cache...
+    // 先检查内存缓存
     UIImage *image = [self imageFromMemoryCacheForKey:key];
     if (image) {
         NSData *diskData = nil;
@@ -390,6 +391,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
         }
 
         @autoreleasepool {
+            //如果内存没有缓存，查看是否有磁盘缓存，并设置内存缓存
             NSData *diskData = [self diskImageDataBySearchingAllPathsForKey:key];
             UIImage *diskImage = [self diskImageForKey:key];
             if (diskImage && self.config.shouldCacheImagesInMemory) {
@@ -397,6 +399,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
                 [self.memCache setObject:diskImage forKey:key cost:cost];
             }
 
+            //无论结果如何，回调，将结果放到上层(SDWebImageManager)处理
             if (doneBlock) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     doneBlock(diskImage, diskData, SDImageCacheTypeDisk);

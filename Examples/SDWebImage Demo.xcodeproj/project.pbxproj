@@ -1180,6 +1180,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-iOS-Demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1206,6 +1207,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.xiabob.SDWebImage-iOS-Demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
