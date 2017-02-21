@@ -86,6 +86,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
 
 - (nullable id)addHandlersForProgress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
                             completed:(nullable SDWebImageDownloaderCompletedBlock)completedBlock {
+    //对于多个视图对同一个url做请求，operation只有一个，但保存相应的回调，回调会有多个，这样避免重复请求
     SDCallbacksDictionary *callbacks = [NSMutableDictionary new];
     if (progressBlock) callbacks[kProgressCallbackKey] = [progressBlock copy];
     if (completedBlock) callbacks[kCompletedCallbackKey] = [completedBlock copy];
@@ -318,7 +319,7 @@ didReceiveResponse:(NSURLResponse *)response
     //Tells the delegate that the data task has received some of the expected data. 图片数据是慢慢传输过来的，这里添加传输过来的数据
     [self.imageData appendData:data];
 
-    //这里是关于渐进下载的功能，边下载边展示
+    //这里是关于渐进下载的功能，边下载边展示，另外：http://blog.ibireme.com/2015/11/02/ios_image_tips/，http://www.cnblogs.com/smileEvday/p/IncrementallyLoadImage.html 可以参考一下
     if ((self.options & SDWebImageDownloaderProgressiveDownload) && self.expectedSize > 0) {
         // The following code is from http://www.cocoaintheshell.com/2011/05/progressive-images-download-imageio/
         // Thanks to the author @Nyx0uf

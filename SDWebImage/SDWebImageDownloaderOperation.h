@@ -22,6 +22,8 @@ extern NSString * _Nonnull const SDWebImageDownloadFinishNotification;
  */
 @protocol SDWebImageDownloaderOperationInterface<NSObject>
 
+//该协议是为了规范自定义downloader operation
+
 - (nonnull instancetype)initWithRequest:(nullable NSURLRequest *)request
                               inSession:(nullable NSURLSession *)session
                                 options:(SDWebImageDownloaderOptions)options;
@@ -29,9 +31,11 @@ extern NSString * _Nonnull const SDWebImageDownloadFinishNotification;
 - (nullable id)addHandlersForProgress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
                             completed:(nullable SDWebImageDownloaderCompletedBlock)completedBlock;
 
+//getter、setter方法，其实就是需要有shouldDecompressImages属性
 - (BOOL)shouldDecompressImages;
 - (void)setShouldDecompressImages:(BOOL)value;
 
+//等价于@property (nonatomic, strong, nullable) NSURLCredential *credential;
 - (nullable NSURLCredential *)credential;
 - (void)setCredential:(nullable NSURLCredential *)value;
 

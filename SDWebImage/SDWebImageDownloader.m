@@ -228,7 +228,7 @@
     dispatch_barrier_sync(self.barrierQueue, ^{ //dispatch_barrier_sync保证多线程下的操作安全
         //URLOperations:用于保存进行中的SDWebImageDownloaderOperation，key是url，value是downloaderOperation
         SDWebImageDownloaderOperation *operation = self.URLOperations[url];
-        if (!operation) {
+        if (!operation) { //对于多个视图对同一个url做请求，operation只有一个，但保存相应的回调，回调会有多个，这样避免重复请求
             //说明是新建的下载任务，通过createCallback回调创建SDWebImageDownloaderOperation
             operation = createCallback();
             self.URLOperations[url] = operation;

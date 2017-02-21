@@ -238,6 +238,7 @@
                             [self callCompletionBlockForOperation:strongOperation completion:completedBlock image:transformedImage data:downloadedData error:nil cacheType:SDImageCacheTypeNone finished:finished url:url];
                         });
                     } else {
+                        //采用
                         if (downloadedImage && finished) {
                             [self.imageCache storeImage:downloadedImage imageData:downloadedData forKey:key toDisk:cacheOnDisk completion:nil];
                         }
@@ -247,7 +248,7 @@
                         
                         //completionBlock的回调路径
                         //operation -> (回调) -> manager -> (回调) -> client
-                        //operation持有从manager传递过来的block，执行block，在manager里发生回调，需要在manager中统一做额外处理。
+                        //operation持有从manager传递过来的block，执行block，在manager里发生回调，需要在manager中统一做额外处理。注意两次的completionBlock是不一样的。
                         
                         //progressBlock回调路径:
                         //operation -> client
