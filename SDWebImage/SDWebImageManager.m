@@ -10,6 +10,7 @@
 #import <objc/message.h>
 #import "NSImage+WebCache.h"
 
+//这里SDWebImageCombinedOperation只是作为一个容器对象存在，并没有执行实际的操作
 @interface SDWebImageCombinedOperation : NSObject <SDWebImageOperation>
 
 @property (assign, nonatomic, getter = isCancelled) BOOL cancelled;
@@ -125,7 +126,7 @@
         url = nil;
     }
 
-    //注意这个operation是SDWebImageCombinedOperation
+    //注意这个operation是SDWebImageCombinedOperation，这里SDWebImageCombinedOperation只是作为一个容器对象存在，并没有执行实际的操作
     __block SDWebImageCombinedOperation *operation = [SDWebImageCombinedOperation new];
     __weak SDWebImageCombinedOperation *weakOperation = operation;
 
@@ -238,7 +239,7 @@
                             [self callCompletionBlockForOperation:strongOperation completion:completedBlock image:transformedImage data:downloadedData error:nil cacheType:SDImageCacheTypeNone finished:finished url:url];
                         });
                     } else {
-                        //采用
+                        //采用渐进下载时，finished是NO，下载完成，operation为finished，才为YES
                         if (downloadedImage && finished) {
                             [self.imageCache storeImage:downloadedImage imageData:downloadedData forKey:key toDisk:cacheOnDisk completion:nil];
                         }
@@ -338,6 +339,8 @@
 
 
 @implementation SDWebImageCombinedOperation
+
+//这里SDWebImageCombinedOperation只是作为一个容器对象存在，并没有执行实际的操作
 
 - (void)setCancelBlock:(nullable SDWebImageNoParamsBlock)cancelBlock {
     // check if the operation is already cancelled, then we just call the cancelBlock

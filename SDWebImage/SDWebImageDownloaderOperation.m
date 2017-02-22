@@ -120,6 +120,10 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
     return shouldCancel;
 }
 
+
+//isReady为NO，start方法不会执行,比如operation有其他dependencies，那么isReady就是NO，正常情况下，你不需要重写isReady，除非自定义的operation中有其他因素会影响isReady的状态
+//operation的执行影响因素：1、isReady；2、queuePriority。isReady都是YES，则优先级高的先执行
+//编程指南：https://developer.apple.com/library/content/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationObjects/OperationObjects.html
 - (void)start { //默认实现会调用main方法，自定义operation重写start方法可以不调用main，而调用自定义方法
     
     //operation会被添加到queue中异步并行执行，这里有修改操作，需要加锁??但同一个operation不会在多个线程执行，加锁有必要吗？
@@ -247,6 +251,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
 
 //finished是readonly的，所以在子类需要自己设置它的setter方法，需要手动触发KVO通知
 - (void)setFinished:(BOOL)finished {
+    //手动调用kvo，应该是automaticallyNotifiesObserversOfFinished返回的是NO，自动调用被关闭了https://objccn.io/issue-7-3/ ,http://stackoverflow.com/questions/3573236/why-does-nsoperation-disable-automatic-key-value-observing
     [self willChangeValueForKey:@"isFinished"];
     _finished = finished;
     [self didChangeValueForKey:@"isFinished"];
@@ -259,11 +264,14 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
     [self didChangeValueForKey:@"isExecuting"];
 }
 
-- (BOOL)isConcurrent {
+- (BOOL)isConcurrent { //o be deprecated; use and override 'asynchronous' below ：asynchronous才符合本意
     //为YES，operation在相关线程上异步执行；为NO，operation在相关线程同步执行，会阻塞线程
     return YES;
 }
-//上面三个属性，自定义operation时，是必须重写的，isConcurrent为yes保证执行的异步，修改isFinished、isExecuting是为了通过kvo向外界报告operation的状态，operation之前设置优先级、依赖等就需要这些信息，另外在cancle时也需要设置finished为YES。
+
+//https://developer.apple.com/reference/foundation/operation
+//上面三个属性，自定义operation时，是必须重写的，isConcurrent为yes保证执行的异步，修改isFinished、isExecuting是为了通过kvo向外界报告operation的状态，operation queue移除已完成的operation、operation之前设置优先级、依赖等就需要这些信息，另外在cancle时也需要设置finished为YES。
+//感觉这里少了ready的处理，“依赖”关系出现了问题
 
 
 #pragma mark NSURLSessionDataDelegate
