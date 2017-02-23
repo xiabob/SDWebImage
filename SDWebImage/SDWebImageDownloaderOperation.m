@@ -489,6 +489,7 @@ didReceiveResponse:(NSURLResponse *)response
             }
         }
     }
+
     [self done];
 }
 
@@ -565,6 +566,7 @@ didReceiveResponse:(NSURLResponse *)response
                             imageData:(nullable NSData *)imageData
                                 error:(nullable NSError *)error
                              finished:(BOOL)finished {
+    //如果[self callbacksForKey:kCompletedCallbackKey]放在dispatch_main_async_safe里面，就有可能出问题，因为无法保证操作的原子性，reset方法会remove这些block。因而取block时，可能block已经被删除了。
     NSArray<id> *completionBlocks = [self callbacksForKey:kCompletedCallbackKey];
     dispatch_main_async_safe(^{
         for (SDWebImageDownloaderCompletedBlock completedBlock in completionBlocks) {
